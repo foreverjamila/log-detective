@@ -1,22 +1,23 @@
 from log_detective.parser import parse_file
 from log_detective.detector import detect_repeated_failures, detect_error_spike, detect_time_gaps
+from log_detective.reporter import generate_report
+import sys
+
 def main():
     print("Log Detective - starting up")
+
+    if len(sys.argv) < 2:
+        print("Usage: python -m log_detective.main <path-to-log>")
+        sys.exit(1)
     
-    result = parse_file("samples/sample.log")
+    result = parse_file(sys.argv[1])
 
     repeated_failures = detect_repeated_failures(result)
     error_spikes = detect_error_spike(result)
     time_gaps = detect_time_gaps(result)
 
-    for failure in repeated_failures:
-        print(f" Repeated failure: {failure}")
+    generate_report(result, repeated_failures, error_spikes, time_gaps)
 
-    for spike in error_spikes:
-        print(f" Error spike at: {spike.strftime('%Y-%m-%d %H:%M:%S')}")
-
-    for start, end in time_gaps:
-        print(f" No activity between {start.strftime('%Y-%m-%d %H:%M:%S')} and {end.strftime('%Y-%m-%d %H:%M:%S')}")
     
    
 
